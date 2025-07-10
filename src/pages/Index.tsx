@@ -56,16 +56,16 @@ const Index = () => {
   return (
     <div className="h-screen flex flex-col bg-slate-50">
       {/* Header */}
-      <header className="bg-gradient-to-r from-slate-800 to-slate-700 text-white px-6 py-4 shadow-lg z-30 relative">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-            </svg>
-          </div>
+      <header className="bg-white text-slate-800 px-6 py-4 shadow-lg z-30 relative border-b border-slate-200">
+        <div className="flex items-center gap-4">
+          <img 
+            src="https://www.setbysetec.com/wp-content/uploads/2022/10/SET_LOGO_setbysetec_Q_bicoul-150x150.png" 
+            alt="SET Logo" 
+            className="w-12 h-12 object-contain"
+          />
           <div>
-            <h1 className="text-xl font-bold">Urbanisme Interactive</h1>
-            <p className="text-slate-300 text-sm">Informations urbanistiques en un clic</p>
+            <h1 className="text-2xl font-bold text-primary">SetPLU</h1>
+            <p className="text-slate-600 text-sm">Informations urbanistiques en un clic</p>
           </div>
         </div>
       </header>

@@ -25,11 +25,6 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loadi
         <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
           <div>
             <h2 className="text-lg font-semibold text-slate-800">Informations du point</h2>
-            {clickData && (
-              <p className="text-sm text-slate-600">
-                {clickData.lat.toFixed(6)}, {clickData.lon.toFixed(6)}
-              </p>
-            )}
           </div>
           <button
             onClick={onClose}
@@ -45,7 +40,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loadi
         <div className="flex-1 overflow-y-auto">
           {loading && !clickData?.addressData && (
             <div className="flex items-center justify-center p-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               <span className="ml-3 text-slate-600">Chargement des données...</span>
             </div>
           )}
