@@ -15,72 +15,61 @@ interface SidePanelProps {
 
 const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loading }) => {
   return (
-    <>
-      {/* Overlay */}
-      <div
-        className={`fixed inset-0 bg-black transition-opacity duration-300 z-40 ${
-          isOpen ? 'opacity-30' : 'opacity-0 pointer-events-none'
-        }`}
-        onClick={onClose}
-      />
-
-      {/* Panel */}
-      <div
-        className={`fixed right-0 top-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="h-full flex flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-800">Informations du point</h2>
-              {clickData && (
-                <p className="text-sm text-slate-600">
-                  {clickData.lat.toFixed(6)}, {clickData.lon.toFixed(6)}
-                </p>
-              )}
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto">
-            {loading && !clickData?.addressData && (
-              <div className="flex items-center justify-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                <span className="ml-3 text-slate-600">Chargement des données...</span>
-              </div>
-            )}
-
+    <div
+      className={`fixed right-0 top-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
+        isOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}
+    >
+      <div className="h-full flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-800">Informations du point</h2>
             {clickData && (
-              <div className="space-y-6 p-4">
-                <AddressInfo data={clickData.addressData} />
-                <ZoningInfo data={clickData.zoningData} />
-                <PLUSynthesis 
-                  addressData={clickData.addressData}
-                  zoningData={clickData.zoningData}
-                />
-              </div>
+              <p className="text-sm text-slate-600">
+                {clickData.lat.toFixed(6)}, {clickData.lon.toFixed(6)}
+              </p>
             )}
           </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
-          {/* Question Input */}
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto">
+          {loading && !clickData?.addressData && (
+            <div className="flex items-center justify-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <span className="ml-3 text-slate-600">Chargement des données...</span>
+            </div>
+          )}
+
           {clickData && (
-            <div className="border-t border-slate-200 p-4">
-              <QuestionInput />
+            <div className="space-y-6 p-4">
+              <AddressInfo data={clickData.addressData} />
+              <ZoningInfo data={clickData.zoningData} />
+              <PLUSynthesis 
+                addressData={clickData.addressData}
+                zoningData={clickData.zoningData}
+              />
             </div>
           )}
         </div>
+
+        {/* Question Input */}
+        {clickData && (
+          <div className="border-t border-slate-200 p-4">
+            <QuestionInput />
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

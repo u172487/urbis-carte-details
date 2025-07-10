@@ -56,7 +56,7 @@ const Index = () => {
   return (
     <div className="h-screen flex flex-col bg-slate-50">
       {/* Header */}
-      <header className="bg-gradient-to-r from-slate-800 to-slate-700 text-white px-6 py-4 shadow-lg">
+      <header className="bg-gradient-to-r from-slate-800 to-slate-700 text-white px-6 py-4 shadow-lg z-30 relative">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -71,9 +71,13 @@ const Index = () => {
       </header>
 
       {/* Main content */}
-      <div className="flex-1 relative">
-        <MapView onMapClick={handleMapClick} />
+      <div className="flex-1 flex relative">
+        {/* Map container with dynamic width */}
+        <div className={`transition-all duration-300 ${sidePanelOpen ? 'w-[calc(100%-24rem)]' : 'w-full'}`}>
+          <MapView onMapClick={handleMapClick} />
+        </div>
         
+        {/* Side panel with fixed positioning */}
         <SidePanel
           isOpen={sidePanelOpen}
           onClose={handleCloseSidePanel}
