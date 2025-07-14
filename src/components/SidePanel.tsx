@@ -36,7 +36,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loadi
           </button>
         </div>
 
-        {/* Content */}
+        {/* Content - Single scrollable container */}
         <div className="flex-1 overflow-y-auto">
           {loading && !clickData?.addressData && (
             <div className="flex items-center justify-center p-8">
@@ -53,19 +53,17 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loadi
                 addressData={clickData.addressData}
                 zoningData={clickData.zoningData}
               />
+              
+              {/* Question Input moved inside scrollable area */}
+              <div className="border-t border-slate-200 pt-6">
+                <QuestionInput 
+                  addressData={clickData.addressData}
+                  zoningData={clickData.zoningData}
+                />
+              </div>
             </div>
           )}
         </div>
-
-        {/* Question Input */}
-        {clickData && (
-          <div className="border-t border-slate-200 p-4">
-            <QuestionInput 
-              addressData={clickData.addressData}
-              zoningData={clickData.zoningData}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

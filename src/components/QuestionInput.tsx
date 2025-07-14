@@ -128,11 +128,11 @@ const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }
         </button>
       </form>
 
-      {/* Response Section */}
+      {/* Response Section with scrollable content */}
       {response && (
         <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
           <h5 className="text-sm font-medium text-slate-700 mb-2">Réponse</h5>
-          <div className="text-sm text-slate-600 mb-3 leading-relaxed">
+          <div className="max-h-64 overflow-y-auto text-sm text-slate-600 mb-3 leading-relaxed">
             {renderMarkdown(response.reponse)}
           </div>
           {response.doc_url && (
