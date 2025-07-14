@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Textarea } from './ui/textarea';
 import { useToast } from "@/hooks/use-toast";
@@ -8,10 +7,28 @@ interface QuestionInputProps {
   zoningData?: any;
 }
 
+interface ApiResponse {
+  reponse: string;
+  doc_url: string;
+}
+
 const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }) => {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState<ApiResponse | null>(null);
   const { toast } = useToast();
+
+  // Simple Markdown renderer for bold text
+  const renderMarkdown = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        const boldText = part.slice(2, -2);
+        return <strong key={index}>{boldText}</strong>;
+      }
+      return part;
+    });
+  };
 
   const fetchAnswer = async (questionText: string) => {
     if (!addressData || !zoningData) {
@@ -24,6 +41,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }
     }
 
     setLoading(true);
+    setResponse(null); // Clear previous response
 
     try {
       // Extract parameters from addressData and zoningData
@@ -49,13 +67,16 @@ const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }
         ...(typezone && { typezone }),
       });
 
-      const response = await fetch(`http://127.0.0.1:5000/question?${params.toString()}`);
+      const apiResponse = await fetch(`http://127.0.0.1:5000/question?${params.toString()}`);
       
-      if (!response.ok) {
-        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+      if (!apiResponse.ok) {
+        throw new Error(`Erreur ${apiResponse.status}: ${apiResponse.statusText}`);
       }
 
-      const answer = await response.json();
+      const answer = await apiResponse.json();
+      
+      // Store the response for display
+      setResponse(answer);
       
       toast({
         title: "Question envoyée",
@@ -106,6 +127,26 @@ const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }
           {loading ? 'Envoi en cours...' : 'Envoyer la question'}
         </button>
       </form>
+
+      {/* Response Section */}
+      {response && (
+        <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+          <h5 className="text-sm font-medium text-slate-700 mb-2">Réponse</h5>
+          <div className="text-sm text-slate-600 mb-3 leading-relaxed">
+            {renderMarkdown(response.reponse)}
+          </div>
+          {response.doc_url && (
+            <a
+              href={response.doc_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80 text-xs font-medium underline"
+            >
+              Consulter le document
+            </a>
+          )}
+        </div>
+      )}
     </div>
   );
 };
