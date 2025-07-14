@@ -60,7 +60,10 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loadi
         {/* Question Input */}
         {clickData && (
           <div className="border-t border-slate-200 p-4">
-            <QuestionInput />
+            <QuestionInput 
+              addressData={clickData.addressData}
+              zoningData={clickData.zoningData}
+            />
           </div>
         )}
       </div>
