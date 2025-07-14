@@ -63,6 +63,12 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			  fontFamily: {
+				sans: ['ui-sans-serif', 'system-ui'],
+				anton: ['"Anton"', 'sans-serif'],
+				oswald: ['"Oswald"', 'sans-serif'],
+				bebas: ['"Bebas Neue"', 'cursive'],
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',

@@ -4,6 +4,7 @@ import L from 'leaflet';
 
 // Fix pour les icônes Leaflet avec React
 import 'leaflet/dist/leaflet.css';
+import { longFormatters } from 'date-fns';
 
 interface MapViewProps {
   onMapClick: (lat: number, lon: number) => void;
@@ -19,9 +20,8 @@ const MapView: React.FC<MapViewProps> = ({ onMapClick }) => {
 
     // Initialiser la carte
     const map = L.map(mapRef.current).setView([46.603354, 1.888334], 6);
-
     // Ajouter la couche de tuiles
-    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 18
     }).addTo(map);
@@ -34,6 +34,8 @@ const MapView: React.FC<MapViewProps> = ({ onMapClick }) => {
       if (markerRef.current) {
         map.removeLayer(markerRef.current);
       }
+
+      console.log(lat, lng)
       
       // Créer un nouveau marqueur
       const marker = L.marker([lat, lng], {
@@ -48,9 +50,8 @@ const MapView: React.FC<MapViewProps> = ({ onMapClick }) => {
       }).addTo(map);
       
       markerRef.current = marker;
-      
-      // Zoomer sur le point cliqué
-      map.setView([lat, lng], 16, { animate: true });
+      // Zoomer sur le point cliqué en douceur
+      map.flyTo([lat, lng], 16, { animate: true, duration: 1.5 });
       
       onMapClick(lat, lng);
     });
@@ -63,7 +64,7 @@ const MapView: React.FC<MapViewProps> = ({ onMapClick }) => {
         mapInstance.current = null;
       }
     };
-  }, [onMapClick]);
+  }, []);
 
   return (
     <div

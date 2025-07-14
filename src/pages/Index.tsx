@@ -25,16 +25,48 @@ const Index = () => {
 
     try {
       // Requête 1: Adresse (API BAN)
+      // lon = 4.16013825380517
+      // lat = 44.277322343512
       const addressResponse = await fetch(
         `https://api-adresse.data.gouv.fr/reverse/?lon=${lon}&lat=${lat}`
       );
       const addressData = await addressResponse.json();
       
+      console.log("addressData", addressData)
       // Requête 2: Zonage (API Carto IGN)
       const zoningResponse = await fetch(
         `https://apicarto.ign.fr/api/gpu/zone-urba?geom={"type":"Point","coordinates":[${lon},${lat}]}`
       );
       const zoningData = await zoningResponse.json();
+      console.log("zoningData", zoningData)
+      // verifier si features contient des feture pour le geojson zoningData telecharge
+      if (!zoningData.features || zoningData.features.length === 0) {
+          const secteur_ccResponse = await fetch(
+            `https://apicarto.ign.fr/api/gpu/secteur-cc?geom={"type":"Point","coordinates":[${lon},${lat}]}`
+          );
+
+          const secteur_ccData = await secteur_ccResponse.json();
+          console.log("secteur_ccData", secteur_ccData)
+          if(secteur_ccData.features && zoningData.features.length === 0){
+            zoningData.features = secteur_ccData.features;
+            secteur_ccData.features.forEach((feature: any) => {
+              feature.properties.typezone = 'x'; // indice pour le CC
+            });
+          }
+
+      } 
+      // else if (zoningData.features.length > 1){ // verifier si dans zoningData.features il ya  2 ou plusiuers featuers 
+      //   // si c'est la cas prendre uniquement la fetaure ou la vluer de la  cle partition contint le mot 'DU'
+      //   const filteredFeatures = zoningData.features.filter((feature: any) => 
+      //     feature.properties.partition && feature.properties.partition.includes('DU_')
+      //   );
+      //   if (filteredFeatures.length > 0) {
+      //     zoningData.features = filteredFeatures;
+      //   }
+      //   console.log('filtré')
+
+      // }
+      // console.log(zoningData)
 
       setClickData(prev => ({
         ...prev!,
@@ -59,12 +91,12 @@ const Index = () => {
       <header className="bg-white text-slate-800 px-6 py-4 shadow-lg z-30 relative border-b border-slate-200">
         <div className="flex items-center gap-4">
           <img 
-            src="https://www.setbysetec.com/wp-content/uploads/2022/10/SET_LOGO_setbysetec_Q_bicoul-150x150.png" 
+            src="/set_logo.png"
             alt="SET Logo" 
-            className="w-12 h-12 object-contain"
+            className="w-13 h-12 object-contain"
           />
           <div>
-            <h1 className="text-2xl font-bold text-primary">SetPLU</h1>
+            <h1 className="text-2xl font-black  text-[#069642]">PLU</h1>
             <p className="text-slate-600 text-sm">Informations urbanistiques en un clic</p>
           </div>
         </div>
@@ -73,7 +105,7 @@ const Index = () => {
       {/* Main content */}
       <div className="flex-1 flex relative">
         {/* Map container with dynamic width */}
-        <div className={`transition-all duration-300 ${sidePanelOpen ? 'w-[calc(100%-24rem)]' : 'w-full'}`}>
+        <div className={`transition-all duration-300 ${sidePanelOpen ? 'w-[calc(100%-40rem)]' : 'w-full'}`}>
           <MapView onMapClick={handleMapClick} />
         </div>
         

@@ -14,6 +14,7 @@ const formatDate = (dateStr: string): string => {
 };
 
 const ZoningInfo: React.FC<ZoningInfoProps> = ({ data }) => {
+  
   return (
     <div className="bg-green-50 rounded-lg p-4 border border-green-200">
       <h3 className="text-lg font-semibold text-green-800 mb-3 flex items-center">
@@ -25,6 +26,12 @@ const ZoningInfo: React.FC<ZoningInfoProps> = ({ data }) => {
       
       {data ? (
         <div className="space-y-3">
+          <div>
+            <span className="text-sm font-medium text-slate-600">Type de document :</span>
+              <p className="text-slate-800 font-medium">
+                {data.typezone === 'x' ? 'Carte communale'  : 'PLU/PLUi'}
+              </p>
+          </div>
           <div>
             <span className="text-sm font-medium text-slate-600">Zonage :</span>
             <p className="text-slate-800 font-medium">{data.libelle || 'Non disponible'}</p>

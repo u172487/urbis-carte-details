@@ -16,7 +16,7 @@ interface SidePanelProps {
 const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loading }) => {
   return (
     <div
-      className={`fixed right-0 top-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
+      className={`fixed right-0 top-0 h-full w-[40rem] bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}
     >

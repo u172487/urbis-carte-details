@@ -12,19 +12,9 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
   const [error, setError] = useState<string>('');
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
 
-  const ruleLabels: { [key: string]: string } = {
-    cos: 'Coefficient d\'occupation du sol',
-    emprise_sol: 'Emprise au sol',
-    espaces_libres: 'Espaces libres',
-    hauteur_max: 'Hauteur maximale',
-    implantation_limites: 'Implantation par rapport aux limites séparatives',
-    implantation_mutuelle: 'Implantation mutuelle des constructions',
-    implantation_voies: 'Implantation par rapport aux voies publiques',
-    stationnement: 'Stationnement'
-  };
 
   const fetchPLUData = async () => {
-    if (!addressData?.citycode || !zoningData?.partition || !zoningData?.libelle) {
+    if (!zoningData?.partition || !zoningData?.libelle) {
       setError('Données manquantes pour la requête PLU');
       return;
     }
@@ -33,22 +23,40 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
     setError('');
 
     try {
-      const dep = addressData.citycode.substring(0, 2);
+      const dep = addressData?.citycode.substring(0, 2);
+      const adresse = addressData?.label
       const partition = zoningData.partition;
-      const zonage = encodeURIComponent(zoningData.libelle);
+      const zonage = zoningData.libelle;  
+      const gpu_doc_id = zoningData.gpu_doc_id
+      const nomfic = zoningData.nomfic
+      const datvalid = zoningData.datvalid
+      const typezone = zoningData.typezone
+      console.log(addressData, zoningData)
 
-      const response = await fetch(
-        `http://127.0.0.1:5000/get_plu/?dep=${dep}&partition=${partition}&zonage=${zonage}`
-      );
+      const baseUrl = "http://127.0.0.1:5000/get_plu";
+
+      const queryParams = new URLSearchParams({
+          dep,
+          partition,
+          zonage,
+          gpu_doc_id,
+          nomfic,
+          datvalid,
+          typezone,
+          adresse  
+      });
+
+      const response = await fetch(`${baseUrl}?${queryParams}`);
 
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des données PLU');
       }
 
       const data = await response.json();
+      console.log(data)
       setPlusData(data);
     } catch (err) {
-      setError('Impossible de récupérer les données PLU. Vérifiez que le serveur local est accessible.');
+      setError('Impossible de récupérer les données PLU. Veuillez re-essayer');
       console.error('Erreur PLU:', err);
     } finally {
       setLoading(false);
@@ -102,18 +110,16 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
         </div>
       ) : (
         <div className="space-y-2">
-          {Object.entries(plusData).map(([key, value]) => (
-            <div key={key} className="border border-amber-200 rounded">
+          {plusData.regles.map((regle: any, index: number) => (
+            <div key={index} className="border border-amber-200 rounded">
               <button
-                onClick={() => toggleSection(key)}
+                onClick={() => toggleSection(regle.nom)}
                 className="w-full px-3 py-2 text-left bg-amber-100 hover:bg-amber-150 transition-colors flex items-center justify-between"
               >
-                <span className="font-medium text-amber-800">
-                  {ruleLabels[key] || key}
-                </span>
+                <span className="font-medium text-amber-800">{regle.nom}</span>
                 <svg
                   className={`w-4 h-4 transition-transform ${
-                    expandedSections[key] ? 'rotate-180' : ''
+                    expandedSections[regle.nom] ? 'rotate-180' : ''
                   }`}
                   fill="none"
                   stroke="currentColor"
@@ -122,14 +128,26 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              {expandedSections[key] && (
-                <div className="px-3 py-2 bg-white">
-                  <p className="text-slate-700 text-sm">
-                    {value as string || 'Aucune règle spécifiée'}
-                  </p>
+
+              {expandedSections[regle.nom] && (
+                <div className="px-3 py-2 bg-white space-y-2">
+                  <ul className="list-disc pl-5 text-slate-700 text-sm space-y-1">
+                    {regle.liste_regles.map((item: string, idx: number) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                  <a
+                    href={`${plusData.doc_url.split('#')[0]}#page=${regle.numero_page}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-amber-700 text-sm underline hover:text-amber-900"
+                  >
+                    Consulter l'article
+                  </a>
                 </div>
               )}
             </div>
+
           ))}
         </div>
       )}
