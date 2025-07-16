@@ -68,9 +68,9 @@ const Index = () => {
       // }
       // console.log(zoningData)
 
-      // Requête 3: Prescriptions (API Géoportail Urbanisme)
+      // Requête 3: Prescriptions (via Flask backend)
       const prescriptionResponse = await fetch(
-        `https://www.geoportail-urbanisme.gouv.fr/api/feature-info/du?lon=${lon}&lat=${lat}`
+        `/api/prescriptions?lon=${lon}&lat=${lat}`
       );
       const prescriptionData = await prescriptionResponse.json();
       console.log("prescriptionData", prescriptionData);
