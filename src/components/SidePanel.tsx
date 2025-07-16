@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { ClickData } from '../pages/Index';
 import AddressInfo from './AddressInfo';
 import ZoningInfo from './ZoningInfo';
 import PLUSynthesis from './PLUSynthesis';
 import QuestionInput from './QuestionInput';
+import PrescriptionInfo from './PrescriptionInfo';
 import {
   Accordion,
   AccordionContent,
@@ -53,7 +53,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loadi
 
           {clickData && (
             <div className="p-4">
-              <Accordion type="multiple" defaultValue={["general", "zoning", "plu", "questions"]} className="space-y-2">
+              <Accordion type="multiple" defaultValue={["general", "zoning", "prescription", "plu", "questions"]} className="space-y-2">
                 <AccordionItem value="general">
                   <AccordionTrigger className="text-base font-semibold">
                     Informations générales
@@ -69,6 +69,15 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loadi
                   </AccordionTrigger>
                   <AccordionContent>
                     <ZoningInfo data={clickData.zoningData} />
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="prescription">
+                  <AccordionTrigger className="text-base font-semibold">
+                    Prescription
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <PrescriptionInfo data={clickData.prescriptionData} />
                   </AccordionContent>
                 </AccordionItem>
 

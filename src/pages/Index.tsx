@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MapView from '../components/MapView';
 import SidePanel from '../components/SidePanel';
@@ -9,6 +8,7 @@ export interface ClickData {
   addressData?: any;
   zoningData?: any;
   plusData?: any;
+  prescriptionData?: any;
 }
 
 const Index = () => {
@@ -68,10 +68,24 @@ const Index = () => {
       // }
       // console.log(zoningData)
 
+      // Requête 3: Prescriptions (API Géoportail Urbanisme)
+      const prescriptionResponse = await fetch(
+        `https://www.geoportail-urbanisme.gouv.fr/api/feature-info/du?lon=${lon}&lat=${lat}`
+      );
+      const prescriptionData = await prescriptionResponse.json();
+      console.log("prescriptionData", prescriptionData);
+
+      // Filter features that start with "info_", "prescription_", or "generateur_"
+      const filteredFeatures = prescriptionData.features?.filter((feature: any) => {
+        const id = feature.id || '';
+        return id.startsWith('info_') || id.startsWith('prescription_') || id.startsWith('generateur_');
+      }) || [];
+
       setClickData(prev => ({
         ...prev!,
         addressData: addressData.features?.[0]?.properties,
-        zoningData: zoningData.features?.[0]?.properties
+        zoningData: zoningData.features?.[0]?.properties,
+        prescriptionData: { features: filteredFeatures }
       }));
     } catch (error) {
       console.error('Erreur lors des requêtes:', error);
