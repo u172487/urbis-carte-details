@@ -9,7 +9,7 @@ interface QuestionInputProps {
 
 interface ApiResponse {
   reponse: string;
-  doc_url: string;
+  doc_url: string[];
 }
 
 const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }) => {
@@ -135,16 +135,31 @@ const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }
           <div className="max-h-64 overflow-y-auto text-sm text-slate-600 mb-3 leading-relaxed">
             {renderMarkdown(response.reponse)}
           </div>
-          {response.doc_url && (
-            <a
-              href={response.doc_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80 text-xs font-medium underline"
-            >
-              Consulter le document
-            </a>
+          {(response.doc_url[0] || response.doc_url[1]) && (
+            <div className="flex flex-col gap-1">
+              {response.doc_url[0] && (
+                <a
+                  href={response.doc_url[0]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary/80 text-xs font-medium underline"
+                >
+                  Consulter le règlement écrit
+                </a>
+              )}
+              {response.doc_url[1] && (
+                <a
+                  href={response.doc_url[1]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary/80 text-xs font-medium underline"
+                >
+                  Consulter le règlement graphique
+                </a>
+              )}
+            </div>
           )}
+
         </div>
       )}
     </div>

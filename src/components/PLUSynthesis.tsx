@@ -128,7 +128,6 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-
               {expandedSections[regle.nom] && (
                 <div className="px-3 py-2 bg-white space-y-2">
                   <ul className="list-disc pl-5 text-slate-700 text-sm space-y-1">
@@ -136,16 +135,28 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
                       <li key={idx}>{item}</li>
                     ))}
                   </ul>
-                  <a
-                    href={`${plusData.doc_url.split('#')[0]}#page=${regle.numero_page}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-amber-700 text-sm underline hover:text-amber-900"
-                  >
-                    Consulter l'article
-                  </a>
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    <a
+                      href={`${plusData.doc_url[0].split('#')[0]}#page=${regle.numero_page}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-amber-700 text-sm text-sm font-medium px-3 py-1 my-2 rounded-md hover:bg-amber-900 hover:text-white transition-colors"
+                    >
+                      Consulter l'article
+                    </a>
+                    <a
+                      href={`${plusData.doc_url[1].split('#')[0]}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-amber-700 text-sm text-sm font-medium px-3 py-1 my-2 rounded-md hover:bg-amber-900 hover:text-white transition-colors"
+                    >
+                      Consulter le document graphique
+                    </a>
+                  </div>
+
                 </div>
               )}
+
             </div>
 
           ))}
