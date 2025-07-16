@@ -5,6 +5,12 @@ import AddressInfo from './AddressInfo';
 import ZoningInfo from './ZoningInfo';
 import PLUSynthesis from './PLUSynthesis';
 import QuestionInput from './QuestionInput';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface SidePanelProps {
   isOpen: boolean;
@@ -46,21 +52,50 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loadi
           )}
 
           {clickData && (
-            <div className="space-y-6 p-4">
-              <AddressInfo data={clickData.addressData} />
-              <ZoningInfo data={clickData.zoningData} />
-              <PLUSynthesis 
-                addressData={clickData.addressData}
-                zoningData={clickData.zoningData}
-              />
-              
-              {/* Question Input moved inside scrollable area */}
-              <div className="border-t border-slate-200 pt-6">
-                <QuestionInput 
-                  addressData={clickData.addressData}
-                  zoningData={clickData.zoningData}
-                />
-              </div>
+            <div className="p-4">
+              <Accordion type="multiple" defaultValue={["general", "zoning", "plu", "questions"]} className="space-y-2">
+                <AccordionItem value="general">
+                  <AccordionTrigger className="text-base font-semibold">
+                    Informations générales
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <AddressInfo data={clickData.addressData} />
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="zoning">
+                  <AccordionTrigger className="text-base font-semibold">
+                    Zonage
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ZoningInfo data={clickData.zoningData} />
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="plu">
+                  <AccordionTrigger className="text-base font-semibold">
+                    Synthèse PLU
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <PLUSynthesis 
+                      addressData={clickData.addressData}
+                      zoningData={clickData.zoningData}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="questions">
+                  <AccordionTrigger className="text-base font-semibold">
+                    Questions ou clarifications
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <QuestionInput 
+                      addressData={clickData.addressData}
+                      zoningData={clickData.zoningData}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           )}
         </div>

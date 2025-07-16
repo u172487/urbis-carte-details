@@ -108,9 +108,6 @@ const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }
 
   return (
     <div>
-      <h4 className="text-sm font-medium text-slate-700 mb-2">
-        Questions ou clarifications
-      </h4>
       <form onSubmit={handleSubmit} className="space-y-2">
         <Textarea
           value={question}
