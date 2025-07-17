@@ -70,7 +70,7 @@ const Index = () => {
 
       // Requête 3: Prescriptions (via Flask backend)
       const prescriptionResponse = await fetch(
-        `/api/prescriptions?lon=${lon}&lat=${lat}`
+        `http://127.0.0.1:5000/api/prescriptions?lon=${lon}&lat=${lat}`
       );
       const prescriptionData = await prescriptionResponse.json();
       console.log("prescriptionData", prescriptionData);

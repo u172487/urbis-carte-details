@@ -56,7 +56,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loadi
               <Accordion type="multiple" defaultValue={["general", "zoning", "prescription", "plu", "questions"]} className="space-y-2">
                 <AccordionItem value="general">
                   <AccordionTrigger className="text-base font-semibold">
-                    Informations générales
+                    Adresse
                   </AccordionTrigger>
                   <AccordionContent>
                     <AddressInfo data={clickData.addressData} />
@@ -74,7 +74,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, clickData, loadi
 
                 <AccordionItem value="prescription">
                   <AccordionTrigger className="text-base font-semibold">
-                    Prescription
+                    Informations générales
                   </AccordionTrigger>
                   <AccordionContent>
                     <PrescriptionInfo data={clickData.prescriptionData} />
