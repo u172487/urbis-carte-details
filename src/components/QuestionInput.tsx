@@ -97,10 +97,6 @@ const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }
       // Store the response for display
       setResponse(answer);
       
-      toast({
-        title: "Question envoyée",
-        description: "Votre question a été traitée avec succès.",
-      });
 
       console.log('Réponse reçue:', answer);
 
