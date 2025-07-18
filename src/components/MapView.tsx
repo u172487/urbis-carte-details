@@ -35,7 +35,6 @@ const MapView: React.FC<MapViewProps> = ({ onMapClick }) => {
         map.removeLayer(markerRef.current);
       }
 
-      console.log(lat, lng)
       
       // Créer un nouveau marqueur
       const marker = L.marker([lat, lng], {

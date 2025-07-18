@@ -32,13 +32,13 @@ const Index = () => {
       );
       const addressData = await addressResponse.json();
       
-      console.log("addressData", addressData)
+
       // Requête 2: Zonage (API Carto IGN)
       const zoningResponse = await fetch(
         `https://apicarto.ign.fr/api/gpu/zone-urba?geom={"type":"Point","coordinates":[${lon},${lat}]}`
       );
       const zoningData = await zoningResponse.json();
-      console.log("zoningData", zoningData)
+
       // verifier si features contient des feture pour le geojson zoningData telecharge
       if (!zoningData.features || zoningData.features.length === 0) {
           const secteur_ccResponse = await fetch(
@@ -46,7 +46,7 @@ const Index = () => {
           );
 
           const secteur_ccData = await secteur_ccResponse.json();
-          console.log("secteur_ccData", secteur_ccData)
+
           if(secteur_ccData.features && zoningData.features.length === 0){
             zoningData.features = secteur_ccData.features;
             secteur_ccData.features.forEach((feature: any) => {

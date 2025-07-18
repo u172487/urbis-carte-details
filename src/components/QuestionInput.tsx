@@ -98,7 +98,6 @@ const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }
       setResponse(answer);
       
 
-      console.log('Réponse reçue:', answer);
 
       chatHistory[key] = chatHistory[key] || [];
       chatHistory[key].push({
