@@ -139,22 +139,26 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
                     ))}
                   </ul>
                   <div className="flex flex-wrap gap-3 mt-2">
-                    <a
-                      href={`${plusData.doc_url[0].split('#')[0]}#page=${regle.numero_page}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-amber-700 text-sm text-sm font-medium px-3 py-1 my-2 rounded-md hover:bg-amber-900 hover:text-white transition-colors"
-                    >
-                      Consulter l'article
-                    </a>
-                    <a
-                      href={`${plusData.doc_url[1].split('#')[0]}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-amber-700 text-sm text-sm font-medium px-3 py-1 my-2 rounded-md hover:bg-amber-900 hover:text-white transition-colors"
-                    >
-                      Consulter le document graphique
-                    </a>
+                    {plusData.doc_url?.doc_ecrit_url?.length > 0 && (
+                      <a
+                        href={`${plusData.doc_url.doc_ecrit_url[0].split('#')[0]}#page=${regle.numero_page}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-amber-700 text-sm text-sm font-medium px-3 py-1 my-2 rounded-md hover:bg-amber-900 hover:text-white transition-colors"
+                      >
+                        Consulter l'article
+                      </a>
+                    )}
+                    {plusData.doc_url?.doc_graph_url?.length > 0 && (
+                      <a
+                        href={`${plusData.doc_url.doc_graph_url[0].split('#')[0]}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-amber-700 text-sm text-sm font-medium px-3 py-1 my-2 rounded-md hover:bg-amber-900 hover:text-white transition-colors"
+                      >
+                        Consulter le document graphique
+                      </a>
+                    )}
                   </div>
 
                 </div>
@@ -163,6 +167,73 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
             </div>
 
           ))}
+        </div>
+      )}
+      
+      {plusData && (
+        <div className="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
+          <h3 className="font-semibold text-blue-800 mb-4">Documents PLU</h3>
+          <div className="space-y-4">
+            {/* Written Documents */}
+            {plusData.doc_url?.doc_ecrit_url?.length > 0 && (
+              <div>
+                <h4 className="font-medium text-blue-700 mb-2">Documents écrits</h4>
+                <div className="space-y-2">
+                  {plusData.doc_url.doc_ecrit_url.map((url: string, index: number) => (
+                    <a
+                      key={index}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-blue-600 text-sm hover:text-blue-800 hover:underline"
+                    >
+                      Document écrit {index + 1}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Graphical Documents */}
+            {plusData.doc_url?.doc_graph_url?.length > 0 && (
+              <div>
+                <h4 className="font-medium text-blue-700 mb-2">Documents graphiques</h4>
+                <div className="space-y-2">
+                  {plusData.doc_url.doc_graph_url.map((url: string, index: number) => (
+                    <a
+                      key={index}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-blue-600 text-sm hover:text-blue-800 hover:underline"
+                    >
+                      Document graphique {index + 1}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Other Documents */}
+            {plusData.doc_url?.doc_rest_url?.length > 0 && (
+              <div>
+                <h4 className="font-medium text-blue-700 mb-2">Autres documents</h4>
+                <div className="space-y-2">
+                  {plusData.doc_url.doc_rest_url.map((url: string, index: number) => (
+                    <a
+                      key={index}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-blue-600 text-sm hover:text-blue-800 hover:underline"
+                    >
+                      Autre document {index + 1}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
