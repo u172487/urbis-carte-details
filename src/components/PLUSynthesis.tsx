@@ -1,69 +1,89 @@
 import React, { useState } from 'react';
+import CollapsibleSection from './PLU/CollapsibleSection';
+import DocumentSection from './PLU/DocumentSection';
+import PLURule from './PLU/PLURule';
+import LoadingButton from './PLU/LoadingButton';
 
 interface PLUSynthesisProps {
   addressData?: any;
   zoningData?: any;
 }
 
-const processedZonage = {};
+interface PLUData {
+  regles: Array<{
+    nom: string;
+    liste_regles: string[];
+    numero_page?: number;
+  }>;
+  doc_url?: {
+    doc_ecrit_url?: string[];
+    doc_graph_url?: string[];
+    doc_rest_url?: string[];
+  };
+}
+
+interface FetchParams extends Record<string, string> {
+  dep: string;
+  adresse: string;
+  partition: string;
+  zonage: string;
+  gpu_doc_id: string;
+  nomfic: string;
+  datvalid: string;
+  typezone: string;
+}
+
+const processedZonage: { [key: string]: PLUData } = {};
+
 const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) => {
   const [loading, setLoading] = useState(false);
-  const [plusData, setPlusData] = useState<any>(null);
+  const [plusData, setPlusData] = useState<PLUData | null>(null);
   const [error, setError] = useState<string>('');
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
 
-
-  const fetchPLUData = async () => {
+  const buildFetchParams = (): FetchParams | null => {
     if (!zoningData?.partition || !zoningData?.libelle) {
       setError('Données manquantes pour la requête PLU');
-      return;
+      return null;
     }
+
+    return {
+      dep: addressData?.citycode.substring(0, 2),
+      adresse: addressData?.label,
+      partition: zoningData.partition,
+      zonage: zoningData.libelle,
+      gpu_doc_id: zoningData.gpu_doc_id,
+      nomfic: zoningData.nomfic,
+      datvalid: zoningData.datvalid,
+      typezone: zoningData.typezone
+    };
+  };
+
+  const fetchPLUData = async () => {
+    const params = buildFetchParams();
+    if (!params) return;
 
     setLoading(true);
     setError('');
 
     try {
-      const dep = addressData?.citycode.substring(0, 2);
-      const adresse = addressData?.label
-      const partition = zoningData.partition;
-      const zonage = zoningData.libelle;  
-      const gpu_doc_id = zoningData.gpu_doc_id
-      const nomfic = zoningData.nomfic
-      const datvalid = zoningData.datvalid
-      const typezone = zoningData.typezone
-      console.log(addressData, zoningData)
+      const key = `${params.partition}_${params.zonage}`;
 
-      const key = `${partition}_${zonage}`
-
-      if(key in processedZonage) {
+      if (key in processedZonage) {
         setPlusData(processedZonage[key]);
+        return;
       }
-      else {
 
-        const baseUrl = "http://127.0.0.1:5000/get_plu";
+      const queryParams = new URLSearchParams(params);
+      const response = await fetch(`http://127.0.0.1:5000/get_plu?${queryParams}`);
 
-        const queryParams = new URLSearchParams({
-            dep,
-            partition,
-            zonage,
-            gpu_doc_id,
-            nomfic,
-            datvalid,
-            typezone,
-            adresse  
-        });
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des données PLU');
+      }
 
-        const response = await fetch(`${baseUrl}?${queryParams}`);
-
-        if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des données PLU');
-        }
-
-        const data = await response.json();
-
-        processedZonage[key] = data;
-        setPlusData(data);
-    }
+      const data: PLUData = await response.json();
+      processedZonage[key] = data;
+      setPlusData(data);
 
     } catch (err) {
       setError('Impossible de récupérer les données PLU. Veuillez re-essayer');
@@ -80,6 +100,68 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
     }));
   };
 
+  const renderPLUContent = () => {
+    if (!plusData) return null;
+
+    return (
+      <div className="space-y-2">
+        {plusData.regles.map((regle, index) => (
+          <PLURule
+            key={index}
+            rule={regle}
+            isExpanded={expandedSections[regle.nom]}
+            onToggle={() => toggleSection(regle.nom)}
+            documentUrls={plusData.doc_url}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  const renderDocumentsSection = () => {
+    if (!plusData?.doc_url) return null;
+
+    const { doc_ecrit_url, doc_graph_url, doc_rest_url } = plusData.doc_url;
+    const hasAnyDocuments = 
+      (doc_ecrit_url && doc_ecrit_url.length > 0) ||
+      (doc_graph_url && doc_graph_url.length > 0) ||
+      (doc_rest_url && doc_rest_url.length > 0);
+
+    if (!hasAnyDocuments) return null;
+
+    return (
+      <div className="mt-6 bg-blue-50 rounded-lg border border-blue-200">
+        <CollapsibleSection
+          title="Documents PLU"
+          isExpanded={expandedSections['plu-documents']}
+          onToggle={() => toggleSection('plu-documents')}
+          className="border-blue-200"
+          headerClassName="bg-blue-100 hover:bg-blue-150 text-blue-800 px-4 py-3"
+          contentClassName="p-4 space-y-4"
+        >
+          <DocumentSection
+            title="Documents écrits"
+            urls={doc_ecrit_url || []}
+            isExpanded={expandedSections['written-docs']}
+            onToggle={() => toggleSection('written-docs')}
+          />
+          <DocumentSection
+            title="Documents graphiques"
+            urls={doc_graph_url || []}
+            isExpanded={expandedSections['graphical-docs']}
+            onToggle={() => toggleSection('graphical-docs')}
+          />
+          <DocumentSection
+            title="Autres documents"
+            urls={doc_rest_url || []}
+            isExpanded={expandedSections['other-docs']}
+            onToggle={() => toggleSection('other-docs')}
+          />
+        </CollapsibleSection>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
       {!plusData ? (
@@ -87,24 +169,12 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
           <p className="text-sm text-slate-600">
             Cliquez sur le bouton ci-dessous pour obtenir la synthèse des règles du PLU.
           </p>
-          <button
+          <LoadingButton
             onClick={fetchPLUData}
-            disabled={loading}
-            className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
-              loading
-                ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                : 'bg-amber-600 text-white hover:bg-amber-700'
-            }`}
+            loading={loading}
           >
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Chargement...
-              </div>
-            ) : (
-              'Obtenir la synthèse PLU'
-            )}
-          </button>
+            Obtenir la synthèse PLU
+          </LoadingButton>
           {error && (
             <div className="text-red-600 text-sm bg-red-50 p-2 rounded border border-red-200">
               {error}
@@ -112,206 +182,10 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
           )}
         </div>
       ) : (
-        <div className="space-y-2">
-          {plusData.regles.map((regle: any, index: number) => (
-            <div key={index} className="border border-amber-200 rounded">
-              <button
-                onClick={() => toggleSection(regle.nom)}
-                className="w-full px-3 py-2 text-left bg-amber-100 hover:bg-amber-150 transition-colors flex items-center justify-between"
-              >
-                <span className="font-medium text-amber-800">{regle.nom}</span>
-                <svg
-                  className={`w-4 h-4 transition-transform ${
-                    expandedSections[regle.nom] ? 'rotate-180' : ''
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {expandedSections[regle.nom] && (
-                <div className="px-3 py-2 bg-white space-y-2">
-                  <ul className="list-disc pl-5 text-slate-700 text-sm space-y-1">
-                    {regle.liste_regles.map((item: string, idx: number) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                  <div className="flex flex-wrap gap-3 mt-2">
-                    {plusData.doc_url?.doc_ecrit_url?.length > 0 && (
-                      <a
-                        href={`${plusData.doc_url.doc_ecrit_url[0].split('#')[0]}#page=${regle.numero_page}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-amber-700 text-sm text-sm font-medium px-3 py-1 my-2 rounded-md hover:bg-amber-900 hover:text-white transition-colors"
-                      >
-                        Consulter l'article
-                      </a>
-                    )}
-                    {plusData.doc_url?.doc_graph_url?.length > 0 && (
-                      <a
-                        href={`${plusData.doc_url.doc_graph_url[0].split('#')[0]}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-amber-700 text-sm text-sm font-medium px-3 py-1 my-2 rounded-md hover:bg-amber-900 hover:text-white transition-colors"
-                      >
-                        Consulter le document graphique
-                      </a>
-                    )}
-                  </div>
-
-                </div>
-              )}
-
-            </div>
-
-          ))}
-        </div>
-      )}
-      
-      {plusData && (
-        <div className="mt-6 bg-blue-50 rounded-lg border border-blue-200">
-          <button
-            onClick={() => toggleSection('plu-documents')}
-            className="w-full px-4 py-3 text-left bg-blue-100 hover:bg-blue-150 transition-colors flex items-center justify-between"
-          >
-            <h3 className="font-semibold text-blue-800">Documents PLU</h3>
-            <svg
-              className={`w-4 h-4 transition-transform ${
-                expandedSections['plu-documents'] ? 'rotate-180' : ''
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          {expandedSections['plu-documents'] && (
-            <div className="p-4 space-y-4">
-              {/* Written Documents */}
-              {plusData.doc_url?.doc_ecrit_url?.length > 0 && (
-                <div className="border border-blue-200 rounded">
-                  <button
-                    onClick={() => toggleSection('written-docs')}
-                    className="w-full px-3 py-2 text-left bg-blue-50 hover:bg-blue-100 transition-colors flex items-center justify-between"
-                  >
-                    <h4 className="font-medium text-blue-700">Documents écrits</h4>
-                    <svg
-                      className={`w-4 h-4 transition-transform ${
-                        expandedSections['written-docs'] ? 'rotate-180' : ''
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {expandedSections['written-docs'] && (
-                    <div className="px-3 py-2 bg-white space-y-2">
-                      {plusData.doc_url.doc_ecrit_url.map((url: string, index: number) => {
-                        const fileName = url.split('/').pop() || url;
-                        return (
-                          <a
-                            key={index}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block text-blue-600 text-sm hover:text-blue-800 hover:underline break-all"
-                          >
-                            {fileName}
-                          </a>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Graphical Documents */}
-              {plusData.doc_url?.doc_graph_url?.length > 0 && (
-                <div className="border border-blue-200 rounded">
-                  <button
-                    onClick={() => toggleSection('graphical-docs')}
-                    className="w-full px-3 py-2 text-left bg-blue-50 hover:bg-blue-100 transition-colors flex items-center justify-between"
-                  >
-                    <h4 className="font-medium text-blue-700">Documents graphiques</h4>
-                    <svg
-                      className={`w-4 h-4 transition-transform ${
-                        expandedSections['graphical-docs'] ? 'rotate-180' : ''
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {expandedSections['graphical-docs'] && (
-                    <div className="px-3 py-2 bg-white space-y-2">
-                      {plusData.doc_url.doc_graph_url.map((url: string, index: number) => {
-                        const fileName = url.split('/').pop() || url;
-                        return (
-                          <a
-                            key={index}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block text-blue-600 text-sm hover:text-blue-800 hover:underline break-all"
-                          >
-                            {fileName}
-                          </a>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Other Documents */}
-              {plusData.doc_url?.doc_rest_url?.length > 0 && (
-                <div className="border border-blue-200 rounded">
-                  <button
-                    onClick={() => toggleSection('other-docs')}
-                    className="w-full px-3 py-2 text-left bg-blue-50 hover:bg-blue-100 transition-colors flex items-center justify-between"
-                  >
-                    <h4 className="font-medium text-blue-700">Autres documents</h4>
-                    <svg
-                      className={`w-4 h-4 transition-transform ${
-                        expandedSections['other-docs'] ? 'rotate-180' : ''
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {expandedSections['other-docs'] && (
-                    <div className="px-3 py-2 bg-white space-y-2">
-                      {plusData.doc_url.doc_rest_url.map((url: string, index: number) => {
-                        const fileName = url.split('/').pop() || url;
-                        return (
-                          <a
-                            key={index}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block text-blue-600 text-sm hover:text-blue-800 hover:underline break-all"
-                          >
-                            {fileName}
-                          </a>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+        <>
+          {renderPLUContent()}
+          {renderDocumentsSection()}
+        </>
       )}
     </div>
   );
