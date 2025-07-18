@@ -171,69 +171,146 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
       )}
       
       {plusData && (
-        <div className="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
-          <h3 className="font-semibold text-blue-800 mb-4">Documents PLU</h3>
-          <div className="space-y-4">
-            {/* Written Documents */}
-            {plusData.doc_url?.doc_ecrit_url?.length > 0 && (
-              <div>
-                <h4 className="font-medium text-blue-700 mb-2">Documents écrits</h4>
-                <div className="space-y-2">
-                  {plusData.doc_url.doc_ecrit_url.map((url: string, index: number) => (
-                    <a
-                      key={index}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block text-blue-600 text-sm hover:text-blue-800 hover:underline"
+        <div className="mt-6 bg-blue-50 rounded-lg border border-blue-200">
+          <button
+            onClick={() => toggleSection('plu-documents')}
+            className="w-full px-4 py-3 text-left bg-blue-100 hover:bg-blue-150 transition-colors flex items-center justify-between"
+          >
+            <h3 className="font-semibold text-blue-800">Documents PLU</h3>
+            <svg
+              className={`w-4 h-4 transition-transform ${
+                expandedSections['plu-documents'] ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {expandedSections['plu-documents'] && (
+            <div className="p-4 space-y-4">
+              {/* Written Documents */}
+              {plusData.doc_url?.doc_ecrit_url?.length > 0 && (
+                <div className="border border-blue-200 rounded">
+                  <button
+                    onClick={() => toggleSection('written-docs')}
+                    className="w-full px-3 py-2 text-left bg-blue-50 hover:bg-blue-100 transition-colors flex items-center justify-between"
+                  >
+                    <h4 className="font-medium text-blue-700">Documents écrits</h4>
+                    <svg
+                      className={`w-4 h-4 transition-transform ${
+                        expandedSections['written-docs'] ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      Document écrit {index + 1}
-                    </a>
-                  ))}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {expandedSections['written-docs'] && (
+                    <div className="px-3 py-2 bg-white space-y-2">
+                      {plusData.doc_url.doc_ecrit_url.map((url: string, index: number) => {
+                        const fileName = url.split('/').pop() || url;
+                        return (
+                          <a
+                            key={index}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-blue-600 text-sm hover:text-blue-800 hover:underline break-all"
+                          >
+                            {fileName}
+                          </a>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Graphical Documents */}
-            {plusData.doc_url?.doc_graph_url?.length > 0 && (
-              <div>
-                <h4 className="font-medium text-blue-700 mb-2">Documents graphiques</h4>
-                <div className="space-y-2">
-                  {plusData.doc_url.doc_graph_url.map((url: string, index: number) => (
-                    <a
-                      key={index}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block text-blue-600 text-sm hover:text-blue-800 hover:underline"
+              {/* Graphical Documents */}
+              {plusData.doc_url?.doc_graph_url?.length > 0 && (
+                <div className="border border-blue-200 rounded">
+                  <button
+                    onClick={() => toggleSection('graphical-docs')}
+                    className="w-full px-3 py-2 text-left bg-blue-50 hover:bg-blue-100 transition-colors flex items-center justify-between"
+                  >
+                    <h4 className="font-medium text-blue-700">Documents graphiques</h4>
+                    <svg
+                      className={`w-4 h-4 transition-transform ${
+                        expandedSections['graphical-docs'] ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      Document graphique {index + 1}
-                    </a>
-                  ))}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {expandedSections['graphical-docs'] && (
+                    <div className="px-3 py-2 bg-white space-y-2">
+                      {plusData.doc_url.doc_graph_url.map((url: string, index: number) => {
+                        const fileName = url.split('/').pop() || url;
+                        return (
+                          <a
+                            key={index}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-blue-600 text-sm hover:text-blue-800 hover:underline break-all"
+                          >
+                            {fileName}
+                          </a>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Other Documents */}
-            {plusData.doc_url?.doc_rest_url?.length > 0 && (
-              <div>
-                <h4 className="font-medium text-blue-700 mb-2">Autres documents</h4>
-                <div className="space-y-2">
-                  {plusData.doc_url.doc_rest_url.map((url: string, index: number) => (
-                    <a
-                      key={index}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block text-blue-600 text-sm hover:text-blue-800 hover:underline"
+              {/* Other Documents */}
+              {plusData.doc_url?.doc_rest_url?.length > 0 && (
+                <div className="border border-blue-200 rounded">
+                  <button
+                    onClick={() => toggleSection('other-docs')}
+                    className="w-full px-3 py-2 text-left bg-blue-50 hover:bg-blue-100 transition-colors flex items-center justify-between"
+                  >
+                    <h4 className="font-medium text-blue-700">Autres documents</h4>
+                    <svg
+                      className={`w-4 h-4 transition-transform ${
+                        expandedSections['other-docs'] ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      Autre document {index + 1}
-                    </a>
-                  ))}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {expandedSections['other-docs'] && (
+                    <div className="px-3 py-2 bg-white space-y-2">
+                      {plusData.doc_url.doc_rest_url.map((url: string, index: number) => {
+                        const fileName = url.split('/').pop() || url;
+                        return (
+                          <a
+                            key={index}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-blue-600 text-sm hover:text-blue-800 hover:underline break-all"
+                          >
+                            {fileName}
+                          </a>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
