@@ -34,23 +34,30 @@ const Landing = () => {
     {
       icon: MessageSquare,
       title: "Questions en langage naturel",
-      description: "Posez une question du type \"Puis-je construire un étage ici ?\""
+      description: "Posez une question du type \"Puis-je construire un R+3 ici ?\""
     }
   ];
 
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="bg-white/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+      <nav className="bg-white/95 backdrop-blur-sm border-b border-border sticky top-0 z-50 h-24">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-24">
             <a 
               href="https://www.setbysetec.com/" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-xl font-bold text-[#07a549] hover:text-[#07a549]/80 transition-colors"
+              className="text-xl font-bold text-[#07a549] hover:text-[#07a549]/80 transition-colors flex justify-between items-center"
             >
-              Set By Setec
+            <img 
+              src="/set_logo.png"
+              alt="SET Logo" 
+              className="w-13 h-12 object-contain"
+            />
+            <div>
+              <h1 className="text-4xl font-black  text-[#069642]">PLU</h1>
+            </div>
             </a>
             <Button 
               variant="outline" 
@@ -70,7 +77,7 @@ const Landing = () => {
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 animate-fade-in">
               Explorez les règles d'urbanisme
-              <span className="block text-[#07a549]">en un clic</span>
+              <span className="block text-[#07a549] italic">en un clic</span>
             </h1>
             
             <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
@@ -135,18 +142,12 @@ const Landing = () => {
           </div>
           
           <div className="relative max-w-5xl mx-auto">
-            <div className="aspect-video bg-white rounded-lg shadow-2xl border border-slate-200 overflow-hidden">
-              <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
-                <div className="text-center">
-                  <Map className="w-24 h-24 text-[#07a549] mx-auto mb-4" />
-                  <p className="text-slate-600 text-lg">
-                    Aperçu de l'interface interactive
-                  </p>
-                  <p className="text-slate-500 text-sm mt-2">
-                    Carte avec panneau latéral d'informations
-                  </p>
-                </div>
-              </div>
+            <div className="aspect-video bg-white rounded-lg shadow-2xl border border-slate-200 overflow-hidden relative">
+              <img
+                src="/sample_map.png"
+                alt="Carte exemple"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
             </div>
           </div>
         </div>
@@ -187,7 +188,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="text-slate-400">
-              Données fournies par le Géoportail de l'Urbanisme.
+              Données fournies par plusiuers sources officielles
             </p>
           </div>
         </div>

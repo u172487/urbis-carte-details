@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Textarea } from './ui/textarea';
 import { useToast } from "@/hooks/use-toast";
+import { processedZonage }  from "../components/PLUSynthesis";
 
 interface QuestionInputProps {
   addressData?: any;
@@ -11,6 +12,8 @@ interface ApiResponse {
   reponse: string;
   doc_url: string[];
 }
+
+const chatHistory = {};
 
 const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }) => {
   const [question, setQuestion] = useState('');
@@ -54,9 +57,25 @@ const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }
       const datvalid = zoningData.datvalid;
       const typezone = zoningData.typezone;
 
+      const key = `${partition}_${zonage}`;
+      let regles =''
+      console.log("processedZonage", processedZonage)
+      if (key in processedZonage){
+        regles = JSON.stringify(processedZonage[key]);
+      }
+
+      let history = [];
+      if (key in chatHistory) {
+        history = chatHistory[key];
+      } else {
+        chatHistory[key] = [];
+      }
+
       // Create query parameters
       const params = new URLSearchParams({
         question: questionText,
+        regles: regles,
+        history: JSON.stringify(history),
         ...(dep && { dep }),
         ...(adresse && { adresse }),
         ...(partition && { partition }),
@@ -84,6 +103,12 @@ const QuestionInput: React.FC<QuestionInputProps> = ({ addressData, zoningData }
       });
 
       console.log('Réponse reçue:', answer);
+
+      chatHistory[key] = chatHistory[key] || [];
+      chatHistory[key].push({
+        question: questionText,
+        response: answer.reponse,
+      });
       
       // Clear the question after successful submission
       setQuestion('');

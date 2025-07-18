@@ -5,6 +5,7 @@ interface PLUSynthesisProps {
   zoningData?: any;
 }
 
+const processedZonage = {};
 const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) => {
   const [loading, setLoading] = useState(false);
   const [plusData, setPlusData] = useState<any>(null);
@@ -32,28 +33,38 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
       const typezone = zoningData.typezone
       console.log(addressData, zoningData)
 
-      const baseUrl = "http://127.0.0.1:5000/get_plu";
+      const key = `${partition}_${zonage}`
 
-      const queryParams = new URLSearchParams({
-          dep,
-          partition,
-          zonage,
-          gpu_doc_id,
-          nomfic,
-          datvalid,
-          typezone,
-          adresse  
-      });
-
-      const response = await fetch(`${baseUrl}?${queryParams}`);
-
-      if (!response.ok) {
-        throw new Error('Erreur lors de la récupération des données PLU');
+      if(key in processedZonage) {
+        setPlusData(processedZonage[key]);
       }
+      else {
 
-      const data = await response.json();
-      console.log(data)
-      setPlusData(data);
+        const baseUrl = "http://127.0.0.1:5000/get_plu";
+
+        const queryParams = new URLSearchParams({
+            dep,
+            partition,
+            zonage,
+            gpu_doc_id,
+            nomfic,
+            datvalid,
+            typezone,
+            adresse  
+        });
+
+        const response = await fetch(`${baseUrl}?${queryParams}`);
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des données PLU');
+        }
+
+        const data = await response.json();
+
+        processedZonage[key] = data;
+        setPlusData(data);
+    }
+
     } catch (err) {
       setError('Impossible de récupérer les données PLU. Veuillez re-essayer');
       console.error('Erreur PLU:', err);
@@ -159,3 +170,4 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
 };
 
 export default PLUSynthesis;
+export { processedZonage };
