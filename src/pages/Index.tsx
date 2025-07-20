@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import MapView from '../components/MapView';
+import React, { useState, useRef } from 'react';
+import MapView, { MapViewRef } from '../components/MapView';
 import SidePanel from '../components/SidePanel';
+import GeocodingSearch from '../components/GeocodingSearch';
 
 export interface ClickData {
   lat: number;
@@ -15,6 +16,13 @@ const Index = () => {
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [clickData, setClickData] = useState<ClickData | null>(null);
   const [loading, setLoading] = useState(false);
+  const mapRef = useRef<MapViewRef>(null);
+
+  const handleLocationSelect = (lat: number, lon: number) => {
+    if (mapRef.current) {
+      mapRef.current.flyToLocation(lat, lon);
+    }
+  };
 
   const handleMapClick = async (lat: number, lon: number) => {
     setLoading(true);
@@ -103,15 +111,22 @@ const Index = () => {
     <div className="h-screen flex flex-col bg-slate-50">
       {/* Header */}
       <header className="bg-white text-slate-800 px-6 py-4 shadow-lg z-30 relative border-b border-slate-200">
-        <div className="flex items-center gap-4">
-          <img 
-            src="/set_logo.png"
-            alt="SET Logo" 
-            className="w-13 h-12 object-contain"
-          />
-          <div>
-            <h1 className="text-2xl font-black  text-[#069642]">PLU</h1>
-            <p className="text-slate-600 text-sm">Informations urbanistiques en un clic</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img 
+              src="/set_logo.png"
+              alt="SET Logo" 
+              className="w-13 h-12 object-contain"
+            />
+            <div>
+              <h1 className="text-2xl font-black text-[#069642]">PLU</h1>
+              <p className="text-slate-600 text-sm">Informations urbanistiques en un clic</p>
+            </div>
+          </div>
+          
+          {/* Search component aligned to the right */}
+          <div className="flex-shrink-0">
+            <GeocodingSearch onLocationSelect={handleLocationSelect} />
           </div>
         </div>
       </header>
@@ -120,7 +135,7 @@ const Index = () => {
       <div className="flex-1 flex relative">
         {/* Map container with dynamic width */}
         <div className={`transition-all duration-300 ${sidePanelOpen ? 'w-[calc(100%-40rem)]' : 'w-full'}`}>
-          <MapView onMapClick={handleMapClick} />
+          <MapView ref={mapRef} onMapClick={handleMapClick} />
         </div>
         
         {/* Side panel with fixed positioning */}
