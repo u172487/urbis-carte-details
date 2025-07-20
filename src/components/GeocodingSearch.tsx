@@ -116,7 +116,7 @@ const GeocodingSearch: React.FC<GeocodingSearchProps> = ({ onLocationSelect }) =
 
       {/* Results dropdown */}
       {showResults && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg z-[60] max-h-60 overflow-y-auto">
           {results.map((result, index) => (
             <button
               key={index}
