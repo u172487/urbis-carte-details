@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CollapsibleSection from './PLU/CollapsibleSection';
 import DocumentSection from './PLU/DocumentSection';
 import PLURule from './PLU/PLURule';
@@ -40,6 +40,14 @@ const PLUSynthesis: React.FC<PLUSynthesisProps> = ({ addressData, zoningData }) 
   const [plusData, setPlusData] = useState<PLUData | null>(null);
   const [error, setError] = useState<string>('');
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
+
+  // Reset component state when new point data is selected
+  useEffect(() => {
+    setPlusData(null);
+    setError('');
+    setExpandedSections({});
+    setLoading(false);
+  }, [addressData, zoningData]);
 
   const buildFetchParams = (): FetchParams | null => {
     if (!zoningData?.partition || !zoningData?.libelle) {
